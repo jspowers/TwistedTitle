@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twisted Title</title>
-</head>
-<body>
-    <p>log in to store your stats</p>
-    {% if current_user_authenticated == True %}
-    <a class="button" href="{{ url_for('auth.profile') }}">{{ user_username }} Account</a>
-    <a class="button button-clear" href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-    <a class="button" href="{{ url_for('auth.login') }}">Login</a>
-    <a class="button" href="{{ url_for('auth.register') }}">Register</a>
-    {% endif %}
-    <hr>
-    <p>hyperlink to see my stats</p>
-    <hr>
-    <p>clue prompt based on {something}</p>
-    <hr>
-    <h1>Twisted Title</h1>
+{% extends "base.html" %}
+
+{% block title %}
+<title>Twisted Title</title>
+{% endblock %}
+
+{% block content %}
     <p><strong>Clue:</strong> {{ clue }}</p>
 
     {% if message %}
@@ -35,5 +20,4 @@
     {% else %}
     <a href="{{ url_for('game.reset') }}">Play Again</a>
     {% endif %}
-</body>
-</html>
+{% endblock %}

@@ -10,11 +10,13 @@ auth_blueprint = Blueprint("auth", __name__)
 
 @auth_blueprint.route('/profile')
 def profile():
-    return "Lol fuck you"
+    # Logic to get users profile info
+    # Logic to get users performance history 
+    return render_template('profile.html')
 
 
 
-@auth_blueprint.route('/', methods=['POST', 'GET'])
+@auth_blueprint.route('/login', methods=['POST', 'GET'])
 def login():
     error = None
     if current_user.is_authenticated:
@@ -35,14 +37,14 @@ def login():
         elif check_password_hash(user.password, form_password):
             logging.info('User successfully logged into account.')
             login_user(user, remember=remember)
-            return redirect(url_for('home.home_profile'))
+            return redirect(url_for('game.index'))
         elif check_password_hash(user.password, form_password) == False:
             logging.warning('user attempted username/password combo does not match.')
             error = 'Invalid credentials. Please try again.'
     if error:
         flash(error)
-    # return render_template('login.html')
-    return 'lol you logged in, idiot'
+    return redirect(url_for('game.index'))
+    
 
 @auth_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
@@ -86,7 +88,7 @@ def register():
     else:
         for error in errors:
             flash(error)
-        return render_template('register.html')
+        return redirect(url_for('game.index'))
 
 
 
@@ -94,7 +96,7 @@ def register():
 def logout():
     if current_user.is_authenticated:
         logout_user()
-        return "lol you logged out"
+        return redirect(url_for('game.index'))
     else:
         return render_template(
             'index.html',
