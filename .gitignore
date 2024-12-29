@@ -1,0 +1,37 @@
+##########   TWISTED TITLE     ##########
+# Project Utilities
+.clean_directory.py
+
+# Project Assets
+twisted_db.sqlite
+
+# Environment Variables & Assets
+.env
+/venv
+
+# Sandbox and playground
+/_sandbox
+
+##########   BOILERPLATE     ##########
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.DS_Store
+bin/
+build/
+develop-eggs/
+dist/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg

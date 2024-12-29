@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twisted Title Account Register</title>
+</head>
+<body>
+<br>
+<br>
+<h3>Register your Twisted Title Account</h3>
+<p>NOTE: There is legit no password reset becuase we won't even collect your email address.  So, don't forget your password.</p>
+<br>
+<form method="POST" action="/register">
+    <fieldset>
+        <label for="first_name">First Name</label>
+        <input type="text" name="first_name" placeholder="First Name" autofocus="" id="first_name">
+        <br>
+        <label for="username">Username</label>
+        <input type="text" name="username" placeholder="username" autofocus="" id="username">
+        <br>
+        <label for="password">Password</label>
+        <input type="password" name="password" placeholder="Password" autofocus="" id="password">
+        <br>
+        <label for="confirm_password"><em>Confirm Password</em></label>
+        <input type="password" name="confirm_password" placeholder="Repeat Password" autofocus="" id="confirm_password"
+            class="showpassword">
+        <br>
+        <br>
+        <input type="submit" value="Register Account">
+    </fieldset>
+
+</form>
+
+<br>
+<br>
+<a href="{{ url_for('game.index')}}">Home</a>
+</body>
