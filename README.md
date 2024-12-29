@@ -4,7 +4,7 @@ Built on Flask
 
 ## Stack
 - Flask based app
-- SQL Alchemy DB
+- SQLite DB
 
 ## TODO
 - [ ] Build profile page
