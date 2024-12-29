@@ -15,4 +15,3 @@ Built on Flask
 - [X] Explore prompt generation from one of the LLMs (TwistedTitle-Engine)
 - [ ] Admin portal to review prompts containing the similar words in question and answer
 - [ ] Admin portal to approve clues (cc: Casey)
-- 

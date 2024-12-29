@@ -38,6 +38,18 @@
                         <button type="submit">Login</button>
                     </fieldset>
                 </form>
+                <!-- ERROR MESSAGES -->
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <section class="container">    
+                        <blockquote style="border-left: 0.3rem solid #B53731;"">
+                        {% for message in messages %}
+                            <p style="color: inherit;">{{ message }}</p>
+                        {% endfor %}
+                        </blockquote>        
+                </section>
+                {% endif %}
+                {% endwith %}   
                 {% endif %}
 
             </nav>

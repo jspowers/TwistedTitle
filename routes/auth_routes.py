@@ -43,7 +43,7 @@ def login():
             error = 'Invalid credentials. Please try again.'
     if error:
         flash(error)
-    return redirect(url_for('game.index'))
+    return render_template('index.html')
     
 
 @auth_blueprint.route('/register', methods=['GET', 'POST'])
