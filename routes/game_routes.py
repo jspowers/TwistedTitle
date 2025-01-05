@@ -12,14 +12,11 @@ def index():
 
     clue = title_prompts[1]
 
-    print(session["attempt_list"])
-
     if "attempt" not in session:
         session["attempt_list"] = {i:{"answer":None,"correct":None} for i in range(1,MAX_ATTEMPTS+1)}
         session["attempt"] = 0
         session["game_over"] = False
         
-
     # check the user answer
     if request.method == "POST":
 
