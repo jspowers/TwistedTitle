@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>TT - {{ current_user.username }} Profile </title>
+{% endblock %}
+
+{% block content %}
+    <h2> Meet Twisted Title.</h2>
+    <p>We’re puzzlers. Looking for a more riddling game to satisfy a mind hungry for entertainment. Many years ago an unusual round of bar trivia helped spawn the game we now call Twisted Title. If you, like us, want to turn thousands of hours of consumed content into a cheeky brain teaser, we invite you to play.</p>
+    <h3>HOW TO PLAY</h3>
+    <p>In this game you’ll be given a clue describing the plot of a book, film, or TV show. However, the clue will contain a twist! The clue description will match the title of the work but with 1 letter swapped out to make a new word. The point of the game is to figure out what letter was switched to make the twisted title!!</p>
+
+    <p>For example -
+        <br>CLUE:          A scientist discovers a way to bring dinosaurs back to life using a DNA from a wheel of very aged cheese. 
+        <br>TWISTED TITLE: Jurassic <del>Park</del> <ins>Parm</ins>
+    </p>
+
+    <br>
+    <a class="btn btn-primary" role="button"  href="{{ url_for('game.index') }}">Go Play</a>
+{% endblock %}

@@ -10,8 +10,10 @@
         display: flex; /* Arrange items horizontally */
         gap: 10px; /* Optional: Add spacing between items */
     }
-    .horizontal-list li {
+    .horizontal-list {
         display: inline; /* Ensure list items remain inline */
+    }
+    .large-font {
         font-size: 2rem; /* Increase font size */;
     }
     .button-container {
@@ -28,21 +30,24 @@
     <ul class="horizontal-list">
     {% for attempt in range(3) %}
         {% if attempt+1 == correct_attempt %}
-        <li class="horizontal-list">✅</li>
+        <li class="horizontal-list large-font">✅</li>
         {% elif attempt < attempts %}
-        <li class="horizontal-list" style="color:#ce7e7b;">&#10005;</li>
+        <li class="horizontal-list large-font" style="color:#ce7e7b;">&#10005;</li>
         {% else %}
-        <li class="horizontal-list">&#9711;</li>
+        <li class="horizontal-list large-font">&#9711;</li>
         {% endif %}
     {% endfor %}
     </ul>
 
-    {% if message %}
+    {% if message and message != '' %}
     <p>{{ message }}</p>
+    {% else %}
+    <br>
+    <br>
     {% endif %}
     {% if not session.get("game_over", False) %}
     
-    <br>
+    
     <form method="post">
         <input type="text" id="answer" name="answer" placeholder="your guess" autofocus required>
         <button type="submit">Submit</button>
@@ -53,7 +58,7 @@
         {% if current_user.is_authenticated %}
         <a role="button" href="{{ url_for('auth.profile') }}">View Your Record</a>
         {% else %}
-        <div><p>Log In Below&Tab;<a role="button" href="{{ url_for('auth.login') }}" disabled>View Your Record</a></p></div>
+        <a role="button" href="{{ url_for('auth.login') }}" disabled><i><small>(Log in to view record)</small></i></a>
         {% endif %}
     </div>
     {% endif %}

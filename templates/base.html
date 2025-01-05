@@ -20,16 +20,16 @@
 <body>
     <script>
         function viewToggle(ids) {
-        ids.forEach(function(id) {
-            var element = document.getElementById(id);
-            if (element) {
-                if (element.type === "password") {
-                    element.type = "text";
-                } else {
-                    element.type = "password";
+            ids.forEach(function (id) {
+                var element = document.getElementById(id);
+                if (element) {
+                    if (element.type === "password") {
+                        element.type = "text";
+                    } else {
+                        element.type = "password";
+                    }
                 }
-            }
-        });
+            });
         }
     </script>
     <header class="container">
@@ -54,59 +54,58 @@
         {% endblock %}
         <br><br><br>
 
-        <main>
+    </main>
+
+    
+    <footer class="container">
+        <hr>
+        {% if not current_user or current_user.is_authenticated == False %}
+        <article>
+            <header>
+                <h6>Want to save your results?</h6>
+            </header>
+            <form method="post" action="/login">
+                <fieldset role="group">
+                    <input type="text" name="username" placeholder="Username" autocomplete="username" id="username" />
+                    <input type="password" name="password" placeholder="Password" id="password" />
+                </fieldset>
+                <fieldset>
+                    <div class="grid">
+                        <div><label><input type="checkbox" name="showPassword" id="showPassword"
+                                    onclick="viewToggle(['password']);">Show Password</label></div>
+                        <div><label><input type="checkbox" name="RememberMe" id="remember" />Remember Me</label>
+                        </div>
+                        <div><input type="submit" value="Log in" /></div>
+                        <div><a class="secondary" role="button" style="display: block;width: 100%;text-align: center;"
+                                href="{{ url_for('auth.register') }}">Register</a></div>
+                    </div>
+                </fieldset>
+            </form>
+        </article>
 
 
-            <footer class="container">
-                {% if not current_user or current_user.is_authenticated == False %}
-
-                <article>
-                    <header>
-                        <h6>Want to save your results?</h6>
-                    </header>
-                    <form method="post" action="/login">
-                        <fieldset role="group">
-                            <input type="text" name="username" placeholder="Username" autocomplete="username"
-                                id="username" />
-                            <input type="password" name="password" placeholder="Password" id="password" />
-                        </fieldset>
-                        <fieldset>
-                            <div class="grid">
-                                <div><label><input type="checkbox" onclick="viewToggle(['password']);">Show Password</label></div>
-                                <div><label><input type="checkbox" name="RememberMe" id="remember" />Remember Me</label>
-                                </div>
-                                <div><input type="submit" value="Log in" /></div>
-                                <div><a class="secondary" role="button"
-                                        style="display: block;width: 100%;text-align: center;"
-                                        href="{{ url_for('auth.register') }}">Register</a></div>
-                            </div>
-                        </fieldset>
-                    </form>
-                </article>
-
-
-                <!-- ERROR MESSAGES -->
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <section>
-                    <blockquote style="border-left: 0.3rem solid #B53731;"">
+        <!-- ERROR MESSAGES -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <section>
+            <blockquote style="border-left: 0.3rem solid #B53731;"">
                 {% for message in messages %}
                     <p style=" color: inherit;">{{ message }}</p>
-                        {% endfor %}
-                    </blockquote>
-                </section>
-                {% endif %}
-                {% endwith %}
-                {% endif %}
-                <br><br><br>
-                <div class="grid">
-                    <div style="text-align: center;"><a href="">about</a></div>
-                    <div style="text-align: center;"><a href="">contribute</a></div>
-                    <div style="text-align: center;">
-                        <p>&copy; 2024 ME !</p>
-                    </div>
-                </div>
-            </footer>
+                {% endfor %}
+            </blockquote>
+        </section>
+        {% endif %}
+        {% endwith %}
+        {% endif %}
+
+        <div class="grid">
+            <div style="text-align: center;"><a href="{{ url_for('game.about') }}">about</a></div>
+            <div style="text-align: center;"><a href="">contribute</a></div>
+            <div style="text-align: center;">
+                <p>&copy; 2024 ME !</p>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>

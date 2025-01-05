@@ -42,10 +42,7 @@ def index():
             session["message"] = f"Incorrect! You have {MAX_ATTEMPTS - session['attempts']} attempts left."
 
         return redirect(url_for("game.index"))
-
     
-    user_username = current_user.username if current_user.is_authenticated else ''
-
     return render_template(
         "index.html", 
         current_user=current_user,
@@ -57,5 +54,11 @@ def index():
 
 @game_blueprint.route("/reset")
 def reset():
-    session.clear()
+    session["attempts"] = 0
+    session["game_over"] = False
+    session['correct_response'] = None
     return redirect(url_for("game.index"))
+
+@game_blueprint.route("/about")
+def about():
+    return render_template("about.html", current_user=current_user) 
