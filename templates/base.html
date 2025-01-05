@@ -18,8 +18,20 @@
 </head>
 
 <body>
-
-
+    <script>
+        function viewToggle(ids) {
+        ids.forEach(function(id) {
+            var element = document.getElementById(id);
+            if (element) {
+                if (element.type === "password") {
+                    element.type = "text";
+                } else {
+                    element.type = "password";
+                }
+            }
+        });
+        }
+    </script>
     <header class="container">
         <nav>
             <ul>
@@ -59,13 +71,15 @@
                             <input type="password" name="password" placeholder="Password" id="password" />
                         </fieldset>
                         <fieldset>
-                        <div class="grid">
-                            <div><label><input type="checkbox" name="RememberMe" id="remember" />Remember Me</label></div>
-                            <div></div>
-                            <div><input type="submit" value="Log in" /></div>
-                            <div><a class="secondary" role="button" style="display: block;width: 100%;text-align: center;"
-                                href="{{ url_for('auth.register') }}">Register</a></div>
-                        </div>
+                            <div class="grid">
+                                <div><label><input type="checkbox" onclick="viewToggle(['password']);">Show Password</label></div>
+                                <div><label><input type="checkbox" name="RememberMe" id="remember" />Remember Me</label>
+                                </div>
+                                <div><input type="submit" value="Log in" /></div>
+                                <div><a class="secondary" role="button"
+                                        style="display: block;width: 100%;text-align: center;"
+                                        href="{{ url_for('auth.register') }}">Register</a></div>
+                            </div>
                         </fieldset>
                     </form>
                 </article>
@@ -88,7 +102,9 @@
                 <div class="grid">
                     <div style="text-align: center;"><a href="">about</a></div>
                     <div style="text-align: center;"><a href="">contribute</a></div>
-                    <div style="text-align: center;"><p>&copy; 2024 ME !</p></div>
+                    <div style="text-align: center;">
+                        <p>&copy; 2024 ME !</p>
+                    </div>
                 </div>
             </footer>
 </body>
