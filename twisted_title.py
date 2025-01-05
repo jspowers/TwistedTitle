@@ -36,7 +36,11 @@ def create_twisted_title():
     
     return twisted_title
 
-twisted_title = create_twisted_title()    
-with twisted_title.app_context():
-    twisted_db.create_all()
-    twisted_title.run(debug=True, port=8000)
+# Create the app instance for Gunicorn
+twisted_title = create_twisted_title()
+
+# Run database initialization only once, and not when imported by Gunicorn
+if __name__ == "__main__":
+    with twisted_title.app_context():
+        twisted_db.create_all()  # Create tables if they don't exist
+    twisted_title.run(port=8000)  # Run the development server
