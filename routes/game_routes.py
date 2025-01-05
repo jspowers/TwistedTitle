@@ -31,6 +31,7 @@ def index():
         # if the user answer is correct
         if user_answer == clue.twisted_title:
             session["message"] = "Correct! You solved the riddle!"
+            session['correct_response'] = session['attempts']
             session["game_over"] = True
         
         # if the page loads and the max attempts are reached
@@ -42,11 +43,16 @@ def index():
 
         return redirect(url_for("game.index"))
 
+    
+    user_username = current_user.username if current_user.is_authenticated else ''
+
     return render_template(
         "index.html", 
-        current_user_authenticated = current_user.is_authenticated,
+        current_user=current_user,
         clue=clue.prompt, 
-        message=session.get("message", "")
+        message=session.get("message", ""),
+        attempts=session.get("attempts", ""),
+        correct_attempt=session.get("correct_response", None),
         )
 
 @game_blueprint.route("/reset")

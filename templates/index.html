@@ -2,19 +2,44 @@
 
 {% block title %}
 <title>Twisted Title</title>
+<style>
+    .horizontal-list {
+        list-style-type: none; /* Remove bullets/numbers */
+        padding: 0; /* Remove padding */
+        margin: 0; /* Remove margin */
+        display: flex; /* Arrange items horizontally */
+        gap: 10px; /* Optional: Add spacing between items */
+    }
+    .horizontal-list li {
+        display: inline; /* Ensure list items remain inline */
+        font-size: 2rem; /* Increase font size */;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <p><strong>Clue:</strong> {{ clue }}</p>
+    <h4>Clue:</h4>
+    <p>{{ clue }}</p>
+    <ul class="horizontal-list">
+    {% for attempt in range(3) %}
+        {% if attempt+1 == correct_attempt %}
+        <li class="horizontal-list">✅</li>
+        {% elif attempt < attempts %}
+        <li class="horizontal-list" style="color:#ce7e7b;">&#10005;</li>
+        {% else %}
+        <li class="horizontal-list">&#9711;</li>
+        {% endif %}
+    {% endfor %}
+    </ul>
 
     {% if message %}
     <p>{{ message }}</p>
     {% endif %}
-
     {% if not session.get("game_over", False) %}
+    
+    <br>
     <form method="post">
-        <label for="answer">Your Answer:</label>
-        <input type="text" id="answer" name="answer" required>
+        <input type="text" id="answer" name="answer" placeholder="your guess" required>
         <button type="submit">Submit</button>
     </form>
     {% else %}

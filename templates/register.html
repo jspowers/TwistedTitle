@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twisted Title Account Register</title>
-</head>
-<body>
-<br>
-<br>
+{% extends "base.html" %}
+
+{% block title %}
+<title>Twisted Title</title>
+{% endblock %}
+
+{% block content %}
 <h3>Register your Twisted Title Account</h3>
 <p>NOTE: There is legit no password reset becuase we won't even collect your email address.  So, don't forget your password.</p>
 <br>
@@ -36,3 +33,7 @@
 <br>
 <a href="{{ url_for('game.index')}}">Home</a>
 </body>
+{% endblock %}
+
+
+

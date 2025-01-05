@@ -10,14 +10,17 @@ auth_blueprint = Blueprint("auth", __name__)
 
 @auth_blueprint.route('/profile')
 def profile():
-    # Logic to get users profile info
-    # Logic to get users performance history 
-    return render_template('profile.html')
+    return render_template(
+        'profile.html',
+        current_user=current_user,
+        )
+    
 
 
 
 @auth_blueprint.route('/login', methods=['POST', 'GET'])
 def login():
+
     error = None
     if current_user.is_authenticated:
         return redirect(url_for('game.index'))
@@ -33,7 +36,7 @@ def login():
     if request.method == 'POST':
         if not user: 
             logging.warning('user attempted username does not exist in database.')
-            error = 'No matching accounts with given username. Please try again.'
+            error = 'No matching accounts with given username. Please try again or register as new user.'
         elif check_password_hash(user.password, form_password):
             logging.info('User successfully logged into account.')
             login_user(user, remember=remember)
@@ -43,7 +46,7 @@ def login():
             error = 'Invalid credentials. Please try again.'
     if error:
         flash(error)
-    return render_template('index.html')
+    return redirect(url_for('game.index'))
     
 
 @auth_blueprint.route('/register', methods=['GET', 'POST'])
