@@ -1,6 +1,6 @@
 import logging
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user import User
 from extensions import twisted_db
@@ -9,6 +9,7 @@ from extensions import twisted_db
 auth_blueprint = Blueprint("auth", __name__)
 
 @auth_blueprint.route('/profile')
+@login_required
 def profile():
     return render_template(
         'profile.html',
@@ -20,7 +21,6 @@ def profile():
 
 @auth_blueprint.route('/login', methods=['POST', 'GET'])
 def login():
-
     error = None
     if current_user.is_authenticated:
         return redirect(url_for('game.index'))
@@ -96,6 +96,7 @@ def register():
 
 
 @auth_blueprint.route('/logout')
+@login_required
 def logout():
     if current_user.is_authenticated:
         logout_user()

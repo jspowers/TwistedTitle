@@ -17,7 +17,7 @@ def create_twisted_title():
     twisted_db.init_app(twisted_title)
 
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.auth_login'
+    login_manager.login_view = 'game.index'
     login_manager.login_message = "Please login to see this content."
     login_manager.init_app(twisted_title)
 
