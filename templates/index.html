@@ -7,14 +7,11 @@
         list-style-type: none; /* Remove bullets/numbers */
         padding: 0; /* Remove padding */
         margin: 0; /* Remove margin */
-        display: flex; /* Arrange items horizontally */
+        /* display: flex; Arrange items horizontally */
         gap: 10px; /* Optional: Add spacing between items */
     }
-    .horizontal-list {
-        display: inline; /* Ensure list items remain inline */
-    }
     .large-font {
-        font-size: 2rem; /* Increase font size */;
+        font-size: 1.25rem; /* Increase font size */;
     }
     .button-container {
         display: flex;
@@ -27,19 +24,21 @@
 {% block content %}
     <h4>Clue:</h4>
     <p>{{ clue }}</p>
+    <h4>Attempts:</h4>
     <ul class="horizontal-list">
-    {% for attempt in range(3) %}
-        {% if attempt+1 == correct_attempt %}
-        <li class="horizontal-list large-font">✅</li>
-        {% elif attempt < attempts %}
-        <li class="horizontal-list large-font" style="color:#ce7e7b;">&#10005;</li>
+    {% for attempt_num, attempt in attempt_list.items() %}
+        {% if attempt['correct'] == True %}
+        <li class="horizontal-list large-font">✅<ins> - {{ attempt['answer'] }}</ins></li>
+        {% elif attempt['correct'] == False %}
+        <li class="horizontal-list large-font" style="color:#ce7e7b;">❌ - {{ attempt['answer'] }} </li>
         {% else %}
-        <li class="horizontal-list large-font">&#9711;</li>
+        <li class="horizontal-list large-font"><strong>&#9711;</strong></li>
         {% endif %}
     {% endfor %}
     </ul>
 
     {% if message and message != '' %}
+    <br>
     <p>{{ message }}</p>
     {% else %}
     <br>
