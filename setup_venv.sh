@@ -21,4 +21,10 @@ fi
 export PYTHONPATH="$(pwd)"
 echo "PYTHONPATH is set to: $PYTHONPATH"
 
+# EXTRA STEPS
+# Set up the NLTK Toolkit
+python3 utilities/setup_nltk.py
+
+
+# Step X: End setup
 echo "Setup complete. Virtual environment created and dependencies installed."
