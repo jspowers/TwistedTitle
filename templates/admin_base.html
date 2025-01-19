@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="grid">
+        <div>
+            <h4 class="is-size-4">{{ current_user.first_name }} Admin Dashboard</h4>
+        </div>
+        <div>
+            <div class="grid">
+                <div><a class="button" href="{{ url_for('auth.profile') }}">Go to Profile Page</a></div>
+                <div><a class="button" href="{{ url_for('game.index') }}">Go Play</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+<div class="tabs is-boxed">
+    <ul>
+        <li class="is-active">
+            <a href="{{ url_for('admin.create_clues') }}">
+
+                <span>Clues</span>
+            </a>
+        </li>
+        <li>
+            <a href="">
+
+                <span>Admin</span>
+            </a>
+        </li>
+
+    </ul>
+</div>
+
+<div class="tabs is-toggle is-toggle-rounded">
+    <ul>
+        <li class="is-active"><a href="{{ url_for('admin.create_clues') }}"><span>Create Clues</span></a></li>
+        <li><a href=""><span>Manage Clues</span></a></li>
+    </ul>
+</div>
+
+<div class="container">
+    {% block admin_activities %}
+    {% endblock %}
+</div>
+
+
+{% endblock %}

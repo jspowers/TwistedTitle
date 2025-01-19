@@ -7,6 +7,9 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(124), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
+    is_demo = db.Column(db.Boolean, default=False)
+    is_god = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
         return '<User {}>'.format(self.username)

@@ -16,9 +16,6 @@ def profile():
         current_user=current_user,
         )
     
-
-
-
 @auth_blueprint.route('/login', methods=['POST', 'GET'])
 def login():
     error = None
@@ -80,6 +77,7 @@ def register():
             username=username,
             password = generate_password_hash(password, method='scrypt'),
             first_name = first_name,
+            is_admin = False
             )
         twisted_db.session.add(new_user)
         twisted_db.session.commit()

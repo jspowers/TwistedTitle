@@ -2,110 +2,135 @@
 <html>
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta charset="utf-8" data-theme="light">
+    <meta http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    {% block styles %}
+    {% endblock %}
+    
     {% block title %}
     {% endblock %}
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-
-    <!-- Milligram CSS -->
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css"> -->
 </head>
 
 <body>
-    <script>
-        function viewToggle(ids) {
-            ids.forEach(function (id) {
-                var element = document.getElementById(id);
-                if (element) {
-                    if (element.type === "password") {
-                        element.type = "text";
-                    } else {
-                        element.type = "password";
-                    }
-                }
-            });
-        }
-    </script>
-    <header class="container">
-        <nav>
-            <ul>
-                <li>
-                    <h1>Twisted Title</h1>
-                </li>
-            </ul>
-            {% if current_user.is_authenticated == True %}
-            <ul>
-                <li><a role="button" href="{{ url_for('auth.profile') }}">{{ current_user.first_name }}'s Account</a></li>
-                <li><a role="button" href="{{ url_for('auth.logout') }}">Log Out</a></li>
-            </ul>
-            {% endif %}
-        </nav>
-    </header>
-
-
-    <main class="container">
-        {% block content %}
-        {% endblock %}
-        <br><br><br>
-
-    </main>
-
-    
-    <footer class="container">
-        <hr>
-        {% if not current_user or current_user.is_authenticated == False %}
-        <article>
-            <header>
-                <h6>Want to save your results?</h6>
-            </header>
-            <form method="post" action="/login">
-                <fieldset role="group">
-                    <input type="text" name="username" placeholder="Username" autocomplete="username" id="username" />
-                    <input type="password" name="password" placeholder="Password" id="password" />
-                </fieldset>
-                <fieldset>
-                    <div class="grid">
-                        <div><label><input type="checkbox" name="showPassword" id="showPassword"
-                                    onclick="viewToggle(['password']);">Show Password</label></div>
-                        <div><label><input type="checkbox" name="RememberMe" id="remember" />Remember Me</label>
-                        </div>
-                        <div><input type="submit" value="Log in" /></div>
-                        <div><a class="secondary" role="button" style="display: block;width: 100%;text-align: center;"
-                                href="{{ url_for('auth.register') }}">Register</a></div>
+    <section class="section">
+        <div class="container is-max-desktop">
+        
+            <nav class="navbar" role="navigation" aria-label="main navigation">
+                <div class="navbar-brand">
+                    <a class="navbar-item" href="{{ url_for('game.index')}}"><h1 class="title is-1" style="margin-bottom: 0;">Twisted Title</h1></a>
+                </div>
+                <div class="navbar-menu">
+                    <div class="navbar-start">
+                        <a class="navbar-item"href="{{ url_for('game.about') }}">About</a>
                     </div>
-                </fieldset>
-            </form>
-        </article>
-
-
-        <!-- ERROR MESSAGES -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <section>
-            <blockquote style="border-left: 0.3rem solid #B53731;"">
-                {% for message in messages %}
-                    <p style=" color: inherit;">{{ message }}</p>
-                {% endfor %}
-            </blockquote>
-        </section>
-        {% endif %}
-        {% endwith %}
-        {% endif %}
-
-        <div class="grid">
-            <div style="text-align: center;"><a href="{{ url_for('game.about') }}">about</a></div>
-            <div style="text-align: center;"><a href="">contribute</a></div>
-            <div style="text-align: center;">
-                <p>&copy; 2024 ME !</p>
+                </div>
+                {% if current_user.is_authenticated == True %}
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <div class="buttons">
+                            <a class="button is-primary" href="{{ url_for('auth.profile') }}">{{ current_user.first_name }}'s Account</a>
+                            <a class="button is-light"href="{{ url_for('auth.logout') }}">Log Out</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}                
+            </nav>
+            <hr>
+            
+            <div>
+            {% block content %}
+            {% endblock %}
             </div>
+            <br>
+            <br>
+            {% if not current_user or current_user.is_authenticated == False %}
+                <br>
+                <br>
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">Want to save your results?</p>
+                        <a class="button is-primary is-round" style="margin:1rem;" href="{{ url_for('auth.register') }}">Register</a>
+                    </header>
+                    <div class="card-content">
+                        <form method="post" action="/login">
+                            <div class="content">
+                                {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                <blockquote style="border-left: 0.3rem solid #B53731;"">
+                                    {% for message in messages %}
+                                        <p style=" color: inherit;">{{ message }}</p>
+                                    {% endfor %}
+                                </blockquote>
+                                {% endif %}
+                                {% endwith %}
+                                <p>Login or Register to save your progress, access the clue archive, and generally be a happier person :)</p>
+                                
+                                <div class="grid">
+                                    <div class="cell">
+                                        <input class="input is-rounded" type="text" name="username" placeholder="Username" autocomplete="username" id="username" />
+                                    </div>
+                                    <div class="cell">
+                                        <input class="input is-rounded" type="password" name="password" placeholder="Password" id="password" />
+                                    </div>
+                                </div>
+                            
+                                <div style="margin: 1rem;">
+                                    <div class="grid">
+                                        <div>
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="showPassword" id="showPassword" onclick="viewToggle(['password']);"> Show Password
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <label class="checkbox">
+                                                <input type="checkbox" name="RememberMe" id="remember"/> Remember Me
+                                            </label>
+                                        </div>
+                                        <div class="buttons">
+                                            <input class="input" type="submit" value="Login" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                     <!-- ERROR MESSAGES -->
+                    
+                    
+    
+                </div>
+            
+            {% endif %}
+            <div class="fixed-grid has-3-cols">
+                <div class="grid">
+                    <div class="cell"><a class="button is-text" href="{{ url_for('game.about') }}">about</a></div>
+                    <div class="cell"><a class="button is-text" href="">contribute</a></div>
+                    <div class="cell"><p class="button is-text">© 2024 ME !</p></div>
+                </div>
+            </div>
+        
         </div>
-    </footer>
+
+
+        <script>
+            function viewToggle(ids) {
+                ids.forEach(function (id) {
+                    var element = document.getElementById(id);
+                    if (element) {
+                        if (element.type === "password") {
+                            element.type = "text";
+                        } else {
+                            element.type = "password";
+                        }
+                    }
+                });
+            }
+        </script>
+    </section>
 </body>
 
 </html>

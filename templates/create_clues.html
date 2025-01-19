@@ -1,0 +1,100 @@
+{% extends "admin_base.html" %}
+
+{% block title %}
+<title>TT - View Movies </title>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .key-value-pair {
+        margin-bottom: 1rem;
+    }
+
+    .key {
+        display: inline-block;
+        width: 20%;
+        /* Adjust as needed for your key width */
+        vertical-align: top;
+    }
+
+    .values {
+        display: inline-block;
+        width: 75%;
+        /* Adjust for alignment with the key */
+        word-wrap: break-word;
+        /* Ensure values wrap correctly */
+        padding-left: 1rem;
+        /* Indent continuation lines */
+    }
+</style>
+{% endblock %}
+
+
+{% block admin_activities %}
+<p><i>See movies sorted by clue count and vote count descending</i></p>
+<p> TODO: Filter here for the deprioritized movies or other filters</p>
+<br>
+
+
+<div class="grid is-col-min-10">
+    {% for movie in movie_list %}
+    <div class="cell">
+
+        <div class="card">
+            <form action="{{ url_for('admin.update_clue') }}" method="POST">
+                <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                <header class="card-header">
+                    <p class="card-header-title">{{ movie.title }}</p>
+                    <!-- <div> -->
+                    <div style="padding: var(--bulma-card-header-padding);">
+                        {% if movie.difficulty == 1 %}
+                        <span class="tag is-success">easy</span>
+                        {% elif movie.difficulty == 2 %}
+                        <span class="tag is-warning">medium</span>
+                        {% else %}
+                        <span class="tag is-danger">hard</span>
+                        {% endif %}
+                    </div>
+                </header>
+                <div class="card-content">
+                    <div class="content">
+
+
+                        <p>Clue Count: {{ movie.clue_count or 0 }}</p>
+                        <p>Movie Popularity: {{ movie.vote_count or 0 }}</p>
+
+                        <div class="box">
+                            <p class="is-family-monospace"><strong>Potential Twists:</strong></p>
+                            {% for key, values in movie.word_neighbors.items() %}
+                            <div class="key-value-pair is-family-code is-size-7	">
+                                <strong class="key">{{ key }}: </strong>
+                                <span class="values">
+                                    {% for value in values %}
+                                    {{ value }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+<label class="checkbox">
+    <input 
+        id="deprioritize_flag" 
+        name="deprioritize_flag"
+        type="checkbox" 
+        {% if movie.admin_ind_twisted_depri %} 
+            checked
+        {% endif %} />
+        &nbsp;&nbsp;&nbsp;Deprioritize movie
+</label>
+                    </div>
+                </div>
+                <footer class="card-footer">
+                    <button type="submit" class="card-footer-item is-ghost">Save Details</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+{% endblock %}

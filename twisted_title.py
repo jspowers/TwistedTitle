@@ -31,8 +31,10 @@ def create_twisted_title():
     # Register the blueprint
     from routes.game_routes import game_blueprint
     from routes.auth_routes import auth_blueprint
+    from routes.admin_routes import admin_blueprint
     twisted_title.register_blueprint(game_blueprint)
     twisted_title.register_blueprint(auth_blueprint)
+    twisted_title.register_blueprint(admin_blueprint)
     
     return twisted_title
 

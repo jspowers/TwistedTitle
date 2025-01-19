@@ -5,6 +5,11 @@
 {% endblock %}
 
 {% block content %}
-    <h1> Hello {{ current_user.first_name }}</h1>
-    <a class="btn btn-primary" role="button"  href="{{ url_for('game.index') }}">Go Play</a>
+    <h1 class="is-size-1"> Hello {{ current_user.first_name }}</h1>
+    <br>
+    <p>Game calendar is going to go here</p>
+    <br>
+    <a class="button"  href="{{ url_for('admin.create_clues') }}">Go to Admin Panel</a>
+    <a class="button"  href="{{ url_for('game.index') }}">Go Play</a>
+    
 {% endblock %}
