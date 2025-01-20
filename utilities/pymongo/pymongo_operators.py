@@ -1,5 +1,4 @@
 from pymongo import ReturnDocument, InsertOne, ReplaceOne
-from .pymongo_get_database import open_twisted_db
 import logging
 
 logging.basicConfig(
@@ -12,22 +11,6 @@ https://pymongo.readthedocs.io/en/stable/tutorial.html
 
 Creating reusable functions that can read/write to MongoDB
 """
-
-
-def open_collection(db_name, collection_name):
-    db_client = open_twisted_db()
-    db = db_client[db_name]
-    collection = db[collection_name]
-    logging.info(f"successfully opened {db_name}.{collection_name}")
-    return collection
-
-
-def close_collection(db_name=None):
-    if db_name == None:
-        return
-    db_name.close()
-    return
-
 
 def mongo_get(collection, primary_key, ref_id):
     mongo_record = collection.find_one({primary_key: ref_id})
@@ -42,7 +25,7 @@ def mongo_get_many( collection, key=None, ref_id=None, *args, **kwargs):
     limit = 100 if kwargs.get("limit", None) == None else kwargs.get("limit")
     mongo_records = collection.find(
         filter=kwargs.get("filter", {}),
-        sort=kwargs.get("sort", None),
+        sort=kwargs.get("sort", {}),
         limit=limit
         )
     if mongo_records == None:
@@ -107,7 +90,6 @@ def mongo_set_many(
     )
 
     existing_docs = set([doc[primary_key] for doc in doc_search])
-    print(len(existing_docs))
 
     # Create Requests bank
     requests = []

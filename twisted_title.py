@@ -4,7 +4,7 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s: %(message)s', level=log
 from flask import Flask
 from flask_login import LoginManager
 
-from extensions import twisted_db
+from extensions import twisted_db, mongo_client
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -35,7 +35,10 @@ def create_twisted_title():
     twisted_title.register_blueprint(game_blueprint)
     twisted_title.register_blueprint(auth_blueprint)
     twisted_title.register_blueprint(admin_blueprint)
-    
+
+    # Initialize connections to MongoDB
+    mongo_client.init_app(twisted_title)
+
     return twisted_title
 
 # Create the app instance for Gunicorn

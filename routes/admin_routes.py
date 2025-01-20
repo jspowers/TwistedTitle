@@ -23,22 +23,25 @@ def create_clues(**kwargs):
     # Get all movies sorting by active clue count and vote count.
     movie_db = MDBDimMovies()
 
-    movie_list = request.args.get('movie_list', None)
-    if movie_list == None: 
-        movie_list = []
+    movie_list = []
 
-        # Get 4 movies from each difficult
-        for i in range(1, 4):
-            movies = movie_db.get_db_movie(
-                filter={"difficulty": i},
-                sort={"admin_ind_has_clue": 1, "vote_count": -1},
-                limit=4,
-                )
-            for m in movies:
-                m['word_neighbors']=dict()
-                for word in m['title'].split():
-                    m['word_neighbors'][word] = get_movie_neighbors(word)
-                movie_list.append(m)
+    # Get 4 movies from each difficult
+    for i in range(1, 4):
+        movies = movie_db.get_db_movie(
+            filter={"difficulty": i},
+            sort={"admin_ind_has_clue": 1, "vote_count": -1},
+            limit=4,
+            )
+        
+        if movies == None: 
+            logging.warning("No movies found in mongo Response - Breaking")
+            break    
+        for m in movies:
+            m['word_neighbors']=dict()
+            for word in m['title'].split():
+                m['word_neighbors'][word] = get_movie_neighbors(word)
+            movie_list.append(m)
+    
 
     return render_template(
         'create_clues.html',

@@ -1,9 +1,25 @@
-from utilities.pymongo.pymongo_operators import (open_collection, mongo_get, mongo_get_many, mongo_set, mongo_set_many, mongo_delete)
+from utilities.pymongo.pymongo_operators import (mongo_get, mongo_get_many, mongo_set, mongo_set_many, mongo_delete)
+from extensions import mongo_client
 import logging
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s: %(message)s', level=logging.NOTSET)
 """
 DB Class: MDBDimMovies
+MongoDB Fields: 
+    _id : ObjectId
+    popularity : float
+    release_date : str
+    genre_ids : list[int]
+    title : str
+    id : int
+    adult : bool
+    vote_count : int   
+    vote_average : float
+    difficulty : int
+    admin_ind_has_clue : bool
+    admin_ind_twisted_depri : bool
+
+
 Methods:
     get_db_user_profile()
     write_db_user_profile()
@@ -11,10 +27,14 @@ Methods:
 """
 
 class MDBDimMovies(object):
+    db_name = "Twisted"
+    collection_name = "DimMovies"
     collection = None
     
     def __init__(self):
-        self.collection = open_collection("Twisted", "DimMovies")
+        twisted_db = mongo_client.get_mongo_db(self.db_name)
+        self.collection = twisted_db[self.collection_name]
+        logging.info(f"Opened Collection: {self.db_name}.{self.collection_name}")
 
     def get_db_movie(self, document_key = "id", ref_id=None, *args, **kwargs):
         """
@@ -34,6 +54,7 @@ class MDBDimMovies(object):
                 ref_id=ref_id,
                 collection=self.collection,
             )
+            
             return movie
     
     def write_db_movies(self, documents, document_key="id",overwrite=False):
