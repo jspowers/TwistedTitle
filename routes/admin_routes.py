@@ -1,6 +1,7 @@
 import logging
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from flask_login import login_user, current_user, logout_user, login_required
+from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import current_user, login_required
+from pymongo import UpdateOne
 from utilities.pymongo.collections.DimMovies import MDBDimMovies
 from utilities.get_movie_neighbors import get_movie_neighbors
 
@@ -24,6 +25,7 @@ def create_clues(**kwargs):
     movie_db = MDBDimMovies()
 
     movie_list = []
+    movie_update_requests = []
 
     # Get 4 movies from each difficult
     for i in range(1, 4):
@@ -36,12 +38,23 @@ def create_clues(**kwargs):
         if movies == None: 
             logging.warning("No movies found in mongo Response - Breaking")
             break    
-        for m in movies:
-            m['word_neighbors']=dict()
-            for word in m['title'].split():
-                m['word_neighbors'][word] = get_movie_neighbors(word)
-            movie_list.append(m)
     
+        for m in movies:
+            # if the word neighbors are not in the movie record, get them, should only run first time
+            if m.get('word_neighbors') == None:
+                m['word_neighbors']=dict()
+                for word in m['title'].split():
+                    m['word_neighbors'][word] = get_movie_neighbors(word)
+                movie_update_requests.append(
+                    UpdateOne({'id': m['id']}, {'$set': {'word_neighbors': m['word_neighbors']}})
+                    )
+            movie_list.append(m)
+
+    # update mongoDB with any new word neighbors if necessary
+    if len(movie_update_requests) > 0:
+        logging.info(f"{len(movie_update_requests)} records to be updated in MongoDB.")
+        update = movie_db.collection.bulk_write(movie_update_requests)
+        logging.info(f"Updated with {update.modified_count} records with word neighbors.")
 
     return render_template(
         'create_clues.html',

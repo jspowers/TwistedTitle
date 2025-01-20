@@ -28,6 +28,7 @@ def get_movie_neighbors(word):
                 new_word = word[:i] + char + word[i + 1:]  # Replace the character at index i
                 if new_word in english_words and new_word not in HARD_IGNORE:  # Check if it's a valid English word
                     result.append(new_word)
+            
     return list(set(result))  # Remove duplicates
 
     

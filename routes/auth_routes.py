@@ -63,15 +63,16 @@ def register():
     # User Registration form validation
     errors = []
     
+    # check if user / username already exists in databse
     user_username = twisted_db.session.execute(
         twisted_db.select(User).filter_by(username = username)
         ).scalar_one_or_none()
-    
     if user_username:
         errors.append('Username already registered with another accounts.')
     if password != confirm_password:
         errors.append('Passwords do not match, pease try again.')
     
+    # move on if no errors
     if len(errors) == 0:
         new_user = User(
             username=username,

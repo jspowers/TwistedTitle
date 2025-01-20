@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
     is_admin = db.Column(db.Boolean, default=False)
     is_demo = db.Column(db.Boolean, default=False)
     is_god = db.Column(db.Boolean, default=False)
+    created_unixtime = db.Column(db.Integer, nullable=True)
     
     def __repr__(self):
         return '<User {}>'.format(self.username)
