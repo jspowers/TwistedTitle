@@ -30,6 +30,8 @@
 {% endblock %}
 
 
+
+
 {% block admin_activities %}
 <p><i>See movies sorted by clue count and vote count descending</i></p>
 <p> TODO: Filter here for the deprioritized movies or other filters</p>
@@ -37,12 +39,13 @@
 
 
 <div class="grid is-col-min-10">
-    {% for movie in movie_list %}
+    {% for movie in movie_list.values() %}
     <div class="cell">
 
         <div class="card">
-            <form action="{{ url_for('admin.update_clue') }}" method="POST">
+            <form action="{{ url_for('admin.update_clue') }}" id="form_{{ movie.id }}" method="POST" class="form-class">
                 <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                <input type="hidden" name="movie_title" value="{{ movie.title }}">
                 <header class="card-header">
                     <p class="card-header-title">{{ movie.title }}</p>
                     <!-- <div> -->
@@ -62,8 +65,7 @@
 
                         <p>Clue Count: {{ movie.clue_count or 0 }}</p>
                         <p>Movie Popularity: {{ movie.vote_count or 0 }}</p>
-
-                        <div class="box">
+                        <div class="box" style="background-color: #24292e; --bulma-box-shadow: none; --bulma-box-padding: 1rem;">
                             <p class="is-family-monospace"><strong>Potential Twists:</strong></p>
                             {% for key, values in movie.word_neighbors.items() %}
                             <div class="key-value-pair is-family-code is-size-7	">
@@ -76,20 +78,35 @@
                             </div>
                             {% endfor %}
                         </div>
-<label class="checkbox">
-    <input 
-        id="deprioritize_flag" 
-        name="deprioritize_flag"
-        type="checkbox" 
-        {% if movie.admin_ind_twisted_depri %} 
-            checked
-        {% endif %} />
-        &nbsp;&nbsp;&nbsp;Deprioritize movie
-</label>
+                        <br>
+                        {% if movie.clue_error  %}
+                        <p class="has-text-danger is-size-7">{{ movie.clue_error }}</p>
+                        <br>
+                        {% endif %}
+                        <input
+                            class="input is-primary"
+                            type="text"
+                            placeholder="Twisted Title"
+                            name="twisted_title"
+                            style="margin-bottom: .5rem;"
+                            autocomplete="off"
+                            {% if movie.twist_clue_attempt %} 
+                                value="{{ movie.twist_clue_attempt }}" 
+                            {% endif %}
+                            />
+                        <textarea class="textarea is-size-7" placeholder="Twisted Description / Clue" style="margin-bottom: .5rem;">{{ movie.gpt_response }}</textarea>
+                        <button type="submit" name="generate" class="button is-small is-light">Ask ChatGPT</button>
+                        <br>
+                        <br>
+                        <label class="checkbox">
+                            <input id="deprioritize_flag" name="deprioritize_flag" type="checkbox" {% if
+                                movie.admin_ind_twisted_depri %} checked {% endif %} />
+                            &nbsp;&nbsp;&nbsp;Deprioritize movie
+                        </label>
                     </div>
                 </div>
                 <footer class="card-footer">
-                    <button type="submit" class="card-footer-item is-ghost">Save Details</button>
+                    <button type="submit" name="save_movie_clue" class="card-footer-item is-ghost">Save Details</button>
                 </footer>
             </form>
         </div>
@@ -97,4 +114,23 @@
 
     {% endfor %}
 </div>
+{% endblock %}
+
+
+{% block final_scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Select all forms with the class 'form-class'
+        const forms = document.querySelectorAll(".form-class");
+
+        // Add event listeners to each form
+        forms.forEach(form => {
+            form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent form submission
+            const movieId = form.getAttribute("data-movie-id");
+            console.log(`Form submission prevented for movie ID`);
+            });
+        });
+    });
+</script>
 {% endblock %}

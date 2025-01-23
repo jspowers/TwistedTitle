@@ -1,0 +1,20 @@
+HARD_IGNORE = set([
+    "ABOUT", "AFTER", "ALL", "ALSO", "AN", "AND", "ANY", "AS", "AT", 
+    "BACK", "BE", "BECAUSE", "BUT", "BY", "CAN", "COME", "COULD", 
+    "DAY", "DO", 
+    "EVEN",
+    "FIRST", "FOR", "FROM", 
+    "GET", "GIVE", "GO", "GOOD", 
+    "HAVE", "HE", "HER", "HIM", "HIS", "HOW", 
+    "I", "IF", "IN", "INTO", "IS", "IT", "ITS",
+    "LIKE",
+    "ME", "MY", 
+    "NEW", "NO", "NOT", "NOW", 
+    "OF", "ON", "ONE", "ONLY", "OR", "OTHER", "OUR", "OUT", "OVER", 
+    "PERSON", 
+    "SAY", "SEE", "SHE", "SO", "SOME", 
+    "TAKE", "THAN", "THAT", "THE", "THEIR", "THEM", "THEN", "THERE", "THESE", "THEY", "THIS", "TIME", "TO", "TWO", 
+    "UP", "US", "USE", 
+    "WANT", "WAY", "WE", "WELL", "WHAT", "WHEN", "WHICH", "WHO", "WILL", "WITH", "WORK", "WOULD", 
+    "YOU", "YOUR"
+])

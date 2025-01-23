@@ -14,7 +14,7 @@
     <ul class="horizontal-list">
     {% for attempt_num, attempt in attempt_list.items() %}
         {% if attempt['correct'] == True %}
-        <li class="horizontal-list large-font">✅<ins> - {{ attempt['answer'] }}</ins></li>
+        <li class="horizontal-list large-font">✅<strong> - {{ attempt['answer'] }}</strong></li>
         {% elif attempt['correct'] == False %}
         <li class="horizontal-list large-font" style="color:#ce7e7b;">❌ - {{ attempt['answer'] }} </li>
         {% else %}
@@ -34,7 +34,15 @@
         <form method="post">
             <div class="columns">
                 <div class="column">
-                    <input class="input" type="text" id="answer" name="answer" placeholder="your guess" autofocus required>
+                    <input 
+                        class="input" 
+                        type="text" 
+                        id="answer" 
+                        name="answer" 
+                        placeholder="your guess" 
+                        autofocus 
+                        required 
+                        style="text-transform:uppercase; font-family: monospace;">
                 </div>
                 <div class="column">
                     <button class="button is-rounded is-fullwidth is-primary" type="submit">Submit</button>

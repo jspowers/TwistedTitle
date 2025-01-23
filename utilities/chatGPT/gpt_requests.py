@@ -3,14 +3,10 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-
-
 def get_twisted_title_description( 
     original_movie: str = "",
     modified_movie: str = "",
     plot_suggestion: str = "",
-    model="gpt-4", 
-    api_key="", 
     endpoint_url="https://api.openai.com/v1/chat/completions"
     ):
     
@@ -43,7 +39,7 @@ def get_twisted_title_description(
     ]
     )
 
-    return completion.choices[0].message
+    return completion.choices[0].message.content
 
 
 # Example usage
