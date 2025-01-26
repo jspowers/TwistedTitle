@@ -95,6 +95,7 @@ def update_clue():
     original_title = request.form.get("movie_title")
     twist_title = request.form.get("twisted_title", '')
     # Check if submitted title is valid
+    logging.info('Firing clue validation process')
     validation_errors = validate_clue(original_movie=original_title, modified_movie=twist_title)
 
 
@@ -106,6 +107,7 @@ def update_clue():
                 # look for clue validation errors
                 if len(validation_errors) > 0:
                     errors = [x.message for x in validation_errors]
+                    logging.info(f"Clue validation errors: {errors}")
                     flash((movie_id, twist_title, " | ".join(errors)), "clue_validation_error")
                     return redirect(url_for('admin.create_clues'))
                 else: 
