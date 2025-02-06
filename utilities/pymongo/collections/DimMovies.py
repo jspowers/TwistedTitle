@@ -27,15 +27,23 @@ Methods:
 """
 
 class MDBDimMovies(object):
-    db_name = "Twisted"
-    collection_name = "DimMovies"
-    collection = None
+    DB_NAME = "Twisted"
+    COLLECTION_NAME = "DimMovies"
     
     def __init__(self):
-        twisted_db = mongo_client.get_mongo_db(self.db_name)
-        self.collection = twisted_db[self.collection_name]
-        logging.info(f"Opened Collection: {self.db_name}.{self.collection_name}")
+        self.db = mongo_client.get_mongo_db(self.DB_NAME)
+        return
 
+    def __enter__(self):
+        self.collection = self.db[self.COLLECTION_NAME]
+        logging.info(f"Opened Collection: {self.DB_NAME}.{self.COLLECTION_NAME}")
+        return self
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.collection = None
+        logging.info(f"Closed Collection: {self.DB_NAME}.{self.COLLECTION_NAME}")
+        return
+    
     def get_db_movie(self, document_key = "id", ref_id=None, *args, **kwargs):
         """
         Get movie from MongoDB

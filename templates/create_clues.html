@@ -34,9 +34,64 @@
 
 {% block admin_activities %}
 <p><i>See movies sorted by clue count and vote count descending</i></p>
-<p> TODO: Filter here for the deprioritized movies or other filters</p>
-<br>
 
+
+<section class="section">
+        <div class="box">
+            <form action="{{ url_for('admin.movie_search') }}" id="movie_filter_form" class="form-class" method="POST">
+                <div class="columns is-multiline is-align-items-center">
+                    
+                    <!-- Genre Filter -->
+                    <div class="column is-one-quarter">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input id="toggle_depri" name="toggle_depri" type="checkbox" 
+                                {% if filters.admin_ind_twisted_depri==False %} checked {% endif %} />
+                                Hide Deprioritized Movies
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Search by Title -->
+                    <div class="column is-one-quarter">
+                        <label class="label">Title</label>
+                        <div class="control">
+                            <input class="input" type="text" name="title" placeholder="Search by title">
+                        </div>
+                    </div>
+
+                    <!-- Checkboxes -->
+                    <div class="column is-one-quarter">
+                        <div class="control">
+                            <label class="checkbox">
+                                <input id="diff_easy" name="diff_easy" type="checkbox" {% if 1 in filters.difficulty %} checked {% endif
+                                    %} />Easy</label>
+                        </div>
+                        <div class="control">
+                            <label class="checkbox">
+                                <input id="diff_med" name="diff_med" type="checkbox" {% if 2 in filters.difficulty %} checked {% endif
+                                    %} />Medium</label>
+                        </div>
+                        <div class="control">
+                            <label class="checkbox">
+                                <input id="diff_hard" name="diff_hard" type="checkbox" {% if 3 in filters.difficulty %} checked {% endif
+                                    %} />Hard</label>
+                        </div>
+                    </div>
+
+                    <!-- Search Button -->
+                    <div class="column is-one-quarter">
+                        <label class="label">&nbsp;</label>
+                        <div class="control">
+                            <button class="button is-info" name="movie_filter_submit" type="submit">Search</button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+</section>
 
 <div class="grid is-col-min-10">
     {% for movie in movie_list.values() %}
@@ -65,7 +120,8 @@
 
                         <p>Clue Count: {{ movie.clue_count or 0 }}</p>
                         <p>Movie Popularity: {{ movie.vote_count or 0 }}</p>
-                        <div class="box" style="background-color: #24292e; --bulma-box-shadow: none; --bulma-box-padding: 1rem;">
+                        <div class="box"
+                            style="background-color: #24292e; --bulma-box-shadow: none; --bulma-box-padding: 1rem;">
                             <p class="is-family-monospace"><strong>Potential Twists:</strong></p>
                             {% for key, values in movie.word_neighbors.items() %}
                             <div class="key-value-pair is-family-code is-size-7	">
@@ -78,25 +134,28 @@
                             </div>
                             {% endfor %}
                         </div>
-                        <br>
-                        {% if movie.clue_error  %}
+
+                        {% if movie.clue_error %}
                         <p class="has-text-danger is-size-7">{{ movie.clue_error }}</p>
-                        <br>
+                        {% elif movie.clue_proposal_success %}
+                        <p class="has-text-success is-size-7">{{ movie.clue_proposal_success }}</p>
+
                         {% endif %}
-                        <input
-                            class="input is-primary"
-                            type="text"
-                            placeholder="Twisted Title"
-                            name="twisted_title"
-                            style="margin-bottom: .5rem;"
-                            autocomplete="off"
-                            {% if movie.twist_clue_attempt %} 
-                                value="{{ movie.twist_clue_attempt }}" 
-                            {% endif %}
-                            />
-                        <textarea class="textarea is-size-7" placeholder="Twisted Description / Clue" style="margin-bottom: .5rem;">{{ movie.gpt_response }}</textarea>
-                        <button type="submit" name="generate" class="button is-small is-light">Ask ChatGPT</button>
-                        <br>
+                        <div class="field has-addons">
+                            <div class="control  is-expanded">
+                                <input class="input is-primary" type="text" placeholder="Twisted Title"
+                                    name="twisted_title" style="text-transform:uppercase;font-size: 0.8rem;"
+                                    autocomplete="off" {% if movie.twist_clue_attempt %}
+                                    value="{{ movie.twist_clue_attempt }}" {% endif %} />
+                            </div>
+                            <div class="control">
+                                <button type="submit" name="generate_gpt_response" class="button is-light"
+                                    style="font-size: 0.8rem;">ChatGPT</button>
+                            </div>
+                        </div>
+                        <textarea class="textarea is-size-7" placeholder="Twisted Description / Clue"
+                            style="margin-bottom: .5rem;" id="twisted_description"
+                            name="twisted_description">{{ movie.gpt_response }}</textarea>
                         <br>
                         <label class="checkbox">
                             <input id="deprioritize_flag" name="deprioritize_flag" type="checkbox" {% if
@@ -106,7 +165,8 @@
                     </div>
                 </div>
                 <footer class="card-footer">
-                    <button type="submit" name="save_movie_clue" class="card-footer-item is-ghost">Save Details</button>
+                    <button type="submit" name="save_movie_attr" class="card-footer-item">Save Details</button>
+                    <button type="submit" name="propose_clue" class="card-footer-item">Propose Clue</button>
                 </footer>
             </form>
         </div>

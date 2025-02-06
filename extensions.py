@@ -32,7 +32,6 @@ class MongoClientWrapper:
             logging.error("Exception raise:")
             logging.error(e)
         
-
     def get_mongo_db(self, database_name):
         if 'db' not in g:
             g.db = self.client[database_name]
@@ -41,10 +40,12 @@ class MongoClientWrapper:
     def close_connection(self, error=None):
         db = g.pop('db', None)
         if db is not None:
-            self.client.close()
+            logging.info(f"Closing MongoDB connection for {db}")
+            # self.client.close()
+        else :
+            logging.info("No MongoDB connection to close")
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.client.close()
+
 
 mongo_client = MongoClientWrapper()
     

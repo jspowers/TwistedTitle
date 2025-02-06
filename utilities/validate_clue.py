@@ -1,32 +1,50 @@
 import re
 from .hard_ignore_words import HARD_IGNORE
+from .global_utils import remove_non_alpha_letters
 from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class ClueValidation:
+    """
+    A class to represent a Clue Validation.
+    Scope is reference to the button that fires the validation.
+    """
     code: str
+    scope: set[str]
     message: str
+    action: str
 
 class ClueValidations:
     TWISTED_TITLE_EMPTY = ClueValidation(
         code="TWISTED_TITLE_EMPTY",
-        message="Twisted title was not provided"
+        scope={'propose_clue', 'generate_gpt_response'},
+        message="Twisted title was not provided",
+        action="BLOCK",
     )
     TWISTED_TITLE_LENGTH = ClueValidation(
         code="TWISTED_TITLE_LENGTH",
-        message="Twisted title length is different from original title"
+        scope={'propose_clue', 'generate_gpt_response'},
+        message="Twisted title length is different from original title",
+        action="BLOCK",
     )
     TWISTED_TITLE_CHANGE_COUNT = ClueValidation(
         code="TWISTED_TITLE_CHANGE_COUNT",
-        message="Twisted title has too many changes from original title"
+        scope={'propose_clue', 'generate_gpt_response'},
+        message="Twisted title has too many changes from original title",
+        action="BLOCK",
     )
     CLUE_HAS_TITLE = ClueValidation(
         code="CLUE_HAS_TITLE",
-        message="Clue has word from original titles or twisted title"
+        scope={'propose_clue'},
+        message="Clue has word from original titles or twisted title",
+        action="PASS",
     )
-
-def remove_non_alpha_letters(input_string):
-    return re.sub(r"[^A-Z]", "", input_string.upper())
+    DESCRIPTION_IS_EMPTY = ClueValidation(
+        code="DESCRIPTION_IS_EMPTY",
+        scope={'propose_clue'},
+        message="Clue has word from original titles or twisted title",
+        action="BLOCK",
+    )
 
 def validate_clue(original_movie: str, modified_movie: str, clue: str = None) -> list[ClueValidations]:
     """
