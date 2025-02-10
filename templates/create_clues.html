@@ -9,14 +9,12 @@
     .key-value-pair {
         margin-bottom: 1rem;
     }
-
     .key {
         display: inline-block;
         width: 20%;
         /* Adjust as needed for your key width */
         vertical-align: top;
     }
-
     .values {
         display: inline-block;
         width: 75%;
@@ -33,77 +31,77 @@
 
 
 {% block admin_activities %}
-<p><i>See movies sorted by clue count and vote count descending</i></p>
+<h4 class="is-size-4">Movies Filters</h3>
+<div class="box" style="background-color: #24292e; --bulma-box-shadow: none; --bulma-box-padding: 1rem;">
+    <form action="{{ url_for('admin.movie_search') }}" id="movie_filter_form" class="form-class" method="POST">
+        <div class="columns is-multiline is-align-items-center">
 
-
-<section class="section">
-        <div class="box">
-            <form action="{{ url_for('admin.movie_search') }}" id="movie_filter_form" class="form-class" method="POST">
-                <div class="columns is-multiline is-align-items-center">
-                    
-                    <!-- Genre Filter -->
-                    <div class="column is-one-quarter">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input id="toggle_depri" name="toggle_depri" type="checkbox" 
-                                {% if filters.admin_ind_twisted_depri==False %} checked {% endif %} />
-                                Hide Deprioritized Movies
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Search by Title -->
-                    <div class="column is-one-quarter">
-                        <label class="label">Title</label>
-                        <div class="control">
-                            <input class="input" type="text" name="title" placeholder="Search by title">
-                        </div>
-                    </div>
-
-                    <!-- Checkboxes -->
-                    <div class="column is-one-quarter">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input id="diff_easy" name="diff_easy" type="checkbox" {% if 1 in filters.difficulty %} checked {% endif
-                                    %} />Easy</label>
-                        </div>
-                        <div class="control">
-                            <label class="checkbox">
-                                <input id="diff_med" name="diff_med" type="checkbox" {% if 2 in filters.difficulty %} checked {% endif
-                                    %} />Medium</label>
-                        </div>
-                        <div class="control">
-                            <label class="checkbox">
-                                <input id="diff_hard" name="diff_hard" type="checkbox" {% if 3 in filters.difficulty %} checked {% endif
-                                    %} />Hard</label>
-                        </div>
-                    </div>
-
-                    <!-- Search Button -->
-                    <div class="column is-one-quarter">
-                        <label class="label">&nbsp;</label>
-                        <div class="control">
-                            <button class="button is-info" name="movie_filter_submit" type="submit">Search</button>
-                        </div>
-                    </div>
-
+            <!-- Deprioritization Filter -->
+            <div class="column is-one-quarter">
+                <label class="label">Hide Deprioritized</label>
+                <div class="control">
+                    <label class="checkbox">
+                        <input id="toggle_depri" name="toggle_depri" type="checkbox" {% if
+                            filters.admin_ind_twisted_depri==False %} checked {% endif %} />
+                        Hide Deprioritized Movies
+                    </label>
                 </div>
-            </form>
-        </div>
+            </div>
 
-</section>
+            <!-- Search by Title -->
+            <div class="column">
+                <label class="label">Title</label>
+                <div class="control">
+                    <input class="input" type="text" name="title" placeholder="Search by title">
+                </div>
+            </div>
+
+            <!-- Checkboxes -->
+            <div class="column">
+                <div class="control">
+                    <label class="checkbox">
+                        <input id="diff_easy" name="diff_easy" type="checkbox" {% if 1 in filters.difficulty %} checked
+                            {% endif %} />Easy</label>
+                </div>
+                <div class="control">
+                    <label class="checkbox">
+                        <input id="diff_med" name="diff_med" type="checkbox" {% if 2 in filters.difficulty %} checked {%
+                            endif %} />Medium</label>
+                </div>
+                <div class="control">
+                    <label class="checkbox">
+                        <input id="diff_hard" name="diff_hard" type="checkbox" {% if 3 in filters.difficulty %} checked
+                            {% endif %} />Hard</label>
+                </div>
+            </div>
+
+            <div class="column">
+            </div>
+
+            <!-- Search Button -->
+            <div class="column">
+                <div class="control">
+                    <button class="button is-info" name="movie_filter_submit" type="submit">Search</button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<hr>
 
 <div class="grid is-col-min-10">
     {% for movie in movie_list.values() %}
     <div class="cell">
 
         <div class="card">
-            <form action="{{ url_for('admin.update_clue') }}" id="form_{{ movie.id }}" method="POST" class="form-class">
+            <form action="{{ url_for('admin.update_movies') }}" id="form_{{ movie.id }}" method="POST"
+                class="form-class">
                 <input type="hidden" name="movie_id" value="{{ movie.id }}">
                 <input type="hidden" name="movie_title" value="{{ movie.title }}">
                 <header class="card-header">
                     <p class="card-header-title">{{ movie.title }}</p>
-                    <!-- <div> -->
                     <div style="padding: var(--bulma-card-header-padding);">
                         {% if movie.difficulty == 1 %}
                         <span class="tag is-success">easy</span>
@@ -178,19 +176,4 @@
 
 
 {% block final_scripts %}
-<!-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Select all forms with the class 'form-class'
-        const forms = document.querySelectorAll(".form-class");
-
-        // Add event listeners to each form
-        forms.forEach(form => {
-            form.addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent form submission
-            const movieId = form.getAttribute("data-movie-id");
-            console.log(`Form submission prevented for movie ID`);
-            });
-        });
-    });
-</script> -->
 {% endblock %}

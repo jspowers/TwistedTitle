@@ -1,5 +1,7 @@
 import time
 import logging
+import ast
+from datetime import datetime
 from flask import (
     Blueprint,
     render_template,
@@ -13,17 +15,18 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from pymongo import UpdateOne
+from bson.objectid import ObjectId
 from utilities.pymongo.collections.DimMovies import MDBDimMovies
 from utilities.pymongo.collections.DimClues import MDBDimClues
 from utilities.get_movie_neighbors import get_movie_neighbors
 from utilities.chatGPT.gpt_requests import get_twisted_title_description
 from utilities.validate_clue import validate_clue
-from utilities.global_utils import remove_non_alpha_letters
+from utilities.global_utils import remove_non_alpha_letters, get_max_string_key_value
 
 # Create a Blueprint
 admin_blueprint = Blueprint("admin", __name__)
 
-
+# --------------- ROUTE UTILITIES --------------- #
 def check_admin():
     if current_user.is_admin == False or current_user.is_admin == None:
         return redirect(url_for("auth.profile"))
@@ -37,12 +40,50 @@ def check_for_clue_errors(movie_id, twist_title, validation_errors):
         abort(redirect(url_for("admin.create_clues")))
     return
 
+def assign_filter(filter_set: str, field_name: str, session=session) -> None:
+    """
+    This function is used to assign a filter to the session object.
+    """
+    if request.form.get(field_name):
+        session[filter_set][field_name] = request.form.get(field_name)
+    else:
+        session[filter_set].pop(field_name, None)
+    return
 
+# --------------- TEMPLATE FILTERS --------------- #
+@admin_blueprint.app_template_filter('from_unix')
+def convert_from_unix(s):
+    """
+    Convert a unix timestamp to a human readable time.
+    """
+    return datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S')
+
+@admin_blueprint.app_template_filter('highlight_difference')
+def highlight_difference(mod: str, orig: str, is_orig: bool) -> str:
+    """
+    Compare two strings and wrap the differing character in a <span> tag.
+    """
+    class_mod = "highlight-good" if is_orig else "highlight-bad"
+    if len(orig) != len(mod):
+        return mod 
+    result = []
+    for c1, c2 in zip(orig, mod):
+        if c1 == c2:
+            result.append(c2)
+        else:
+            result.append(f'<span class="{class_mod}">{c2}</span>')  # Wrap different character
+    return ''.join(result)
+
+
+# --------------- BLUEPRINT ROUTES --------------- #
 @admin_blueprint.route("/create_clues", methods=["GET", "POST"])
 @login_required
 def create_clues(**kwargs):
-    check_admin()
+    """
+    This function is used to create clues for the movies.
+    """
 
+    check_admin()
     # Only generate the movie list if the on first load.
     # This makes sure that a reloaded page can keep current set of movies on the page.
     # Get all movies sorting by active clue count and vote count.
@@ -130,9 +171,12 @@ def create_clues(**kwargs):
     )
 
 
-@admin_blueprint.route("/update_clue", methods=["POST"])
+@admin_blueprint.route("/update_movies", methods=["POST"])
 @login_required
-def update_clue():
+def update_movies():
+    """
+    This function is used to update the clue information in the database.
+    """
 
     movie_id = int(request.form.get("movie_id"))
     original_title = request.form.get("movie_title")
@@ -258,9 +302,12 @@ def update_clue():
 @admin_blueprint.route("/movie_search", methods=["POST"])
 @login_required
 def movie_search():
-
+    """
+    This function is used to filter the movie list based on the search criteria.
+    """
+    
     session['movie_search_filters'] = session.get('movie_search_filters', dict({}))
-
+    
     if "movie_filter_submit" in request.form:
         # Hide deprioritized movies
         if request.form.get("toggle_depri", False):
@@ -276,3 +323,117 @@ def movie_search():
 
 
     return redirect(url_for("admin.create_clues"))
+
+
+
+
+@admin_blueprint.route("/manage_clues", methods=["GET", "POST"])  
+@login_required
+def manage_clues():
+    """
+    This function is used to manage the clues in the database.
+    """
+    check_admin()
+
+    filters = dict({})
+    # get any filters needed
+    if request.method == "POST" and "clue_filter_submit" in request.form:
+        assign_filter("clue_search_filters", "original_title")
+        assign_filter("clue_search_filters", "twisted_title")
+        assign_filter("clue_search_filters", "admin_validated")
+        assign_filter("clue_search_filters", "admin_edited")
+        assign_filter("clue_search_filters", "description_contains_title")
+
+        filters = session.get("clue_search_filters", dict({}))
+
+    clue_list = dict({})     
+    with MDBDimClues() as clues_db:
+        clues = clues_db.collection.find(
+            filter=filters,
+            sort={
+                # "admin_validated": 1,
+                "created_unixtime": -1,
+                },
+            limit=20,
+        )
+        if clues == None:
+            logging.warning("No clues found in mongo Response - Breaking")
+        for c in clues:
+            clue_list[c["_id"]] = c
+
+    return render_template(
+        "manage_clues.html",
+        current_user=current_user,
+        clue_list=clue_list,
+        filters=filters,
+    )
+
+@admin_blueprint.route("/update_clues", methods=["POST"])
+@login_required
+def update_clues():
+    """
+    This function is used to update the clue information in the database.
+    """
+    check_admin()
+
+    clue_id = request.form.get("clue_id", "")
+
+    # Adding clue version to clue data
+    if request.method == "POST" and "add_clue_version" in request.form:
+
+        # get clue information from the form submission
+        new_clue_version = request.form.get("new_clue_version", "") 
+        clue_history = ast.literal_eval(request.form.get("edit_history", None))
+        recent_clue = get_max_string_key_value(clue_history)
+
+        if new_clue_version == "":
+            logging.warning("No new clue version provided.")
+        elif remove_non_alpha_letters(new_clue_version) == remove_non_alpha_letters(recent_clue):
+            logging.warning("New clue version is the same as the most recent version.")
+        else:         
+            # Determine the next key as the highest existing key + 1
+            existing_keys = list(map(int, clue_history.keys()))  # Convert keys to integers
+            next_key = str(max(existing_keys) + 1) if existing_keys else "1"  # Increment highest key
+
+            # Update the document
+            with MDBDimClues() as clue_db:
+                result = clue_db.collection.update_one(
+                    {"_id": ObjectId(clue_id)},
+                    {"$set": {
+                        f"edit_history.{next_key}": new_clue_version,
+                        "admin_edited": True,
+                        "admin_validated": False,
+                        "description": new_clue_version,
+
+                        }
+                    }
+                )
+                if result.modified_count == 0:
+                    logging.warning(f"Movie {clue_id} not updated - Records found in upated query: {result.matched_count}")
+                else:
+                    logging.info(f"{result.matched_count} found: {result.modified_count} record updated. Clue {clue_id} modified.")
+    
+    # Validate the clue
+    if request.method == "POST" and "validate_clue" in request.form:
+        # opent the database collection
+        with MDBDimClues() as clue_db:
+            result = clue_db.collection.update_one(
+                {"_id": ObjectId(clue_id)},
+                {"$set": {"admin_validated": True,}}
+            )
+            if result.modified_count == 0:
+                logging.warning(f"Movie {clue_id} not updated - Records found in upated query: {result.matched_count}")
+            else:
+                logging.info(f"{result.matched_count} found: {result.modified_count} record updated. Clue {clue_id} modified.")
+
+    return redirect(url_for("admin.manage_clues"))
+
+@admin_blueprint.route("/assign_clues", methods=["GET"])  
+@login_required
+def assign_clues():
+    """
+    This function is used to manage the clues in the database.
+    """
+    check_admin()
+    
+    return 'hello'

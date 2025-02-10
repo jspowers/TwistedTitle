@@ -1,0 +1,250 @@
+{% extends "admin_base.html" %}
+
+{% block title %}
+<title>TT - Manage Clues </title>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .key-value-pair {
+        margin-bottom: .25rem;
+    }
+
+    .key {
+        display: inline-block;
+        width: 20%;
+        /* Adjust as needed for your key width */
+        vertical-align: top;
+    }
+
+    .values {
+        display: inline-block;
+        width: 75%;
+        /* Adjust for alignment with the key */
+        word-wrap: break-word;
+        /* Ensure values wrap correctly */
+        padding-left: 1rem;
+        /* Indent continuation lines */
+    }
+
+    .highlight-good {
+        color: hsl(141, 71%, 48%);
+        padding: 0 0.1rem;
+        text-decoration: underline;
+    }
+
+    .highlight-bad {
+        color: hsl(348, 100%, 61%);
+        padding: 0 0.1rem;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block admin_activities %}
+<h4 class="is-size-4">Clue Filters</h3>
+    <div class="box" style="background-color: #24292e; --bulma-box-shadow: none; --bulma-box-padding: 1rem;">
+        <form action="{{ url_for('admin.manage_clues') }}" id="clue_filter_form" class="form-class" method="POST">
+            <div class="columns is-multiline is-align-items-center">
+
+                <!-- Original Title Filter -->
+                <div class="column">
+                    <label class="label">Original Title</label>
+                    <div class="control">
+                        <input class="input" type="text" name="original_title" placeholder="original title">
+                    </div>
+                </div>
+
+                <!-- Twisted Title Filter -->
+                <div class="column">
+                    <label class="label">Twisted Title</label>
+                    <div class="control">
+                        <input class="input" type="text" name="twisted_title" placeholder="twisted title">
+                    </div>
+                </div>
+
+                <!-- Admin Validated Filter -->
+                <div class="column">
+                    <label class="label">Validated Clues</label>
+                    <div class="control">
+                        <label class="checkbox">
+                            <input id="toggle_admin_validated" name="toggle_admin_validated" type="checkbox" {% if
+                                filters.admin_validated %} checked {% endif %} />
+                            Show Validated
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Admin Edited Filter -->
+                <div class="column">
+                    <label class="label">Edited Clues</label>
+                    <div class="control">
+                        <label class="checkbox">
+                            <input id="toggle_admin_edited" name="toggle_admin_edited" type="checkbox" {% if
+                                filters.admin_edited %} checked {% endif %} />
+                            Show Edited
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="column">
+                    <div class="control">
+                        <button class="button is-info" name="clue_filter_submit" type="submit">Search</button>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <hr>
+
+
+    {% for clue in clue_list.values() %}
+
+
+    <div class="card">
+        <form action="{{ url_for('admin.update_clues') }}" id="form_{{ clue._id }}" method="POST" class="form-class">
+            <input type="hidden" name="clue_id" value="{{ clue._id }}">
+            <input type="hidden" name="raw_title" value="{{ clue.raw_twisted_title }}">
+            <header class="card-header">
+                <div style="padding: var(--bulma-card-header-padding); flex-grow: 1;">
+                    <p>
+                        <span
+                            style="font-weight: var(--bulma-card-header-weight); color: var(--bulma-card-header-color);">{{
+                            clue.twisted_title }}</span>
+                        <i class="is-size-7 has-text-grey-light mt-0"
+                            style="display: block; margin-top: -2px;">({{clue._id }})</i>
+                    </p>
+                </div>
+                <div style="padding: var(--bulma-card-header-padding);">
+                    <button class="button is-link is-small" type="submit" name="validate_clue">Validate Clue</button>
+                </div>
+            </header>
+            <div class="card-content pt-0">
+                <div class="columns">
+                    <div class="column is-10">
+
+                        <!-- ORIGINAL TITLE -->
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Original: </strong>
+                            <span class="values">{{ clue.original_title.upper() |
+                                highlight_difference(clue.twisted_title, True) | safe }}</span>
+                        </div>
+
+                        <!-- TWISTED TITLE -->
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Twisted: </strong>
+                            <span class="values">{{ clue.twisted_title |
+                                highlight_difference(clue.original_title.upper(), False) | safe }}</span>
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Description: </strong>
+                            <span class="values">{{ clue.description }}</span>
+                        </div>
+
+                        <!-- CLUE VALIDATION -->
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Admin Validation: </strong>
+                            {% if clue.admin_validated %}
+                            <span class="tag is-success is-rounded" style="margin-left: 1rem;">Validated</span>
+                            {% else %}
+                            <span class="tag is-danger is-rounded" style="margin-left: 1rem;">Unverified</span>
+                            {% endif %}
+                        </div>
+
+
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Admin Edited: </strong>
+                            {% if clue.admin_edited %}
+                            <span class="tag is-warning is-rounded" style="margin-left: 1rem;">Edited</span>
+                            {% else %}
+                            <span class="tag is-info is-rounded" style="margin-left: 1rem;">Original</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- CLUE CREATED TIME -->
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Created Time: </strong>
+                            <span class="values">{{ clue.created_unixtime | from_unix }}</span>
+                        </div>
+
+                        <!-- CLUE EDITED -->
+                        <div class="key-value-pair is-family-code is-size-7	">
+                            <strong class="key">Edit Clue: </strong>
+                            <span class="values">
+
+                                <div class="container">
+                                    <!-- Toggle Button -->
+                                    <button class="button is-light is-small" id="toggle-btn" type="button">See Clue
+                                        Versions</button>
+
+                                    <!-- Article Section -->
+                                    <article class="message mt-3 is-hidden is-small" id="article-section">
+                                        <div class="message-header">
+                                            <div class="columns is-vcentered is-mobile" style="width: 100%;">
+                                                <!-- Left Column (25% Width) -->
+                                                <div class="column is-3">
+                                                    <p class="m-0">Add a new version:</p>
+                                                    <button type="submit" class="button is-primary is-small mt-2"
+                                                        name="add_clue_version" id="add_clue_version">Submit</button>
+                                                </div>
+                                                <!-- Right Column (75% Width) -->
+                                                <div class="column is-9">
+
+                                                    <textarea class="textarea is-small" name="new_clue_version" rows="7"
+                                                        placeholder="Enter text here..."></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="message-body">
+                                            <div class="key-value-pair is-family-code is-size-7	">
+                                                <input type="hidden" name="edit_history"
+                                                    value="{{ clue.edit_history }}">
+                                                {% for version, clue_ver in clue.edit_history.items() %}
+                                                <strong class="key">Version {{ version }}</strong>
+                                                <span class="values">{{ clue_ver }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="column is-2 has-text-right">
+                        <p>Clue Assigned:</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    {% endfor %}
+
+    {% endblock %}
+
+    {% block final_scripts %}
+    <script>
+        document.getElementById("toggle-btn").addEventListener("click", function (event) {
+            event.preventDefault(); // Prevents form submission
+
+            let article = document.getElementById("article-section");
+            let button = document.getElementById("toggle-btn");
+
+            // Toggle visibility
+            article.classList.toggle("is-hidden");
+
+            // Change button text based on article visibility
+            if (article.classList.contains("is-hidden")) {
+                button.textContent = "See Clue Versions";
+            } else {
+                button.textContent = "Hide Clue Versions";
+            }
+        });
+    </script>
+    {% endblock %}

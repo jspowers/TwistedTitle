@@ -37,10 +37,19 @@
     </ul>
 </div>
 
+{% set active_page = request.endpoint %}
+
 <div class="tabs is-toggle is-toggle-rounded">
     <ul>
-        <li class="is-active"><a href="{{ url_for('admin.create_clues') }}"><span>Create Clues</span></a></li>
-        <li><a href=""><span>Manage Clues</span></a></li>
+        <li class="{% if active_page == 'admin.create_clues' %}is-active{% endif %}">
+            <a href="{{ url_for('admin.create_clues') }}"><span>Create Clues</span></a>
+        </li>
+        <li class="{% if active_page == 'admin.manage_clues' %}is-active{% endif %}">
+            <a href="{{ url_for('admin.manage_clues') }}"><span>Manage Clues</span></a>
+        </li>
+        <li class="{% if active_page == 'admin.assign_clues' %}is-active{% endif %}">
+            <a href="{{ url_for('admin.assign_clues') }}"><span>Assign Clues</span></a>
+        </li>
     </ul>
 </div>
 
